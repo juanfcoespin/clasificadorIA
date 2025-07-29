@@ -1,16 +1,23 @@
-# This is a sample Python script.
+from src.captura import capturar_interactivo
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+def mostrar_menu():
+    print("\n=== Techtools - ClasificadorIA: Menú Principal ===")
+    print("1. Captura interactiva para img ok y rechazadas (cambiar opcion con tecla 'l')")
+    print("2. Salir")
+
+def main():
+    while True:
+        mostrar_menu()
+        opcion = input("Selecciona una opción: ").strip()
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+        if opcion == "1":
+            capturar_interactivo()
+        elif opcion == "2":
+            print("Saliendo del programa.")
+            break
+        else:
+            print("Opción inválida. Intenta nuevamente.")
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+if __name__ == "__main__":
+    main()
