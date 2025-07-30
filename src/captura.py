@@ -9,11 +9,11 @@ def capturar_interactivo(save_dir="data"):
         return
 
     label = "ok"
-
-    print("\n=== Modo Interactivo de Captura ===")
-    print("Presiona 'c' para capturar y recortar imagen.")
-    print("Presiona 'l' para cambiar entre 'ok' y 'rechazado'.")
-    print("Presiona 'q' para salir.")
+    instrucciones = [
+        "c: Capturar imagen",
+        "l: Cambiar clase",
+        "q: Salir"
+    ]
 
     while True:
         ret, frame = cap.read()
@@ -21,37 +21,47 @@ def capturar_interactivo(save_dir="data"):
             print("No se pudo capturar el frame.")
             break
 
-        # Mostrar clase actual en la imagen
-        cv2.putText(frame, f"Clase actual: {label}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                    1, (0, 255, 0) if label == "ok" else (0, 0, 255), 2)
+        # Mostrar clase actual
+        cv2.putText(frame, f"Clase: {label}", (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.9,
+                    (0, 255, 0) if label == "ok" else (0, 0, 255), 2)
+
+        # Mostrar instrucciones
+        y_offset = 60
+        for linea in instrucciones:
+            cv2.putText(frame, linea, (10, y_offset),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
+            y_offset += 25
 
         cv2.imshow("Captura Interactiva", frame)
-        key = cv2.waitKey(1) & 0xFF  # Asegura lectura correcta en todos los sistemas
+        key = cv2.waitKey(1) & 0xFF
 
         if key == ord('c'):
-            # Congelar el frame actual
             frozen_frame = frame.copy()
-            cv2.destroyWindow("Captura Interactiva")  # Cierra ventana antes de seleccionar ROI
+            cv2.destroyWindow("Captura Interactiva")
 
-            print("\n➡ Selecciona la región con el mouse y presiona ENTER. ESC para cancelar.")
-            roi = cv2.selectROI("Selecciona región", frozen_frame, fromCenter=False, showCrosshair=True)
-            cv2.destroyWindow("Selecciona región")
+
+            # Copia del frame congelado para superponer el texto
+            mensaje = "Selecciona la region con el mouse y presiona ESPACIO para capturarla. Caso contrario digita ESC"
+            print("\n➡" + mensaje)
+            cv2.putText(frozen_frame, mensaje, (300, 30),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+            roi = cv2.selectROI("Selecciona region", frozen_frame, fromCenter=False, showCrosshair=True)
+            cv2.destroyWindow("Selecciona region")
 
             if roi != (0, 0, 0, 0):
                 x, y, w, h = roi
                 recorte = frozen_frame[y:y+h, x:x+w]
-
                 output_dir = os.path.join(save_dir, label)
                 os.makedirs(output_dir, exist_ok=True)
                 filename = datetime.now().strftime("%Y%m%d_%H%M%S") + ".jpg"
                 ruta_completa = os.path.join(output_dir, filename)
                 cv2.imwrite(ruta_completa, recorte)
-
-                print(f"\n✅ Imagen recortada guardada en: {ruta_completa}")
+                print(f"\n✅ Imagen guardada en: {ruta_completa}")
             else:
                 print("\n⚠ Recorte cancelado.")
 
-            # Reabrir ventana principal tras ROI
+            # Restaurar ventana de captura
             cv2.namedWindow("Captura Interactiva")
 
         elif key == ord('l'):
@@ -64,3 +74,4 @@ def capturar_interactivo(save_dir="data"):
 
     cap.release()
     cv2.destroyAllWindows()
+    cv2.waitKey(1)
