@@ -1,6 +1,6 @@
 from src.captura import capturar_interactivo
 from src.entrenar import entrenar_modelo
-from src.clasificar import clasificar_en_vivo
+from src.clasificar_tmp import clasificar_en_vivo
 
 def mostrar_menu():
     print("\n=== Techtools - ClasificadorIA: Menú Principal ===")
